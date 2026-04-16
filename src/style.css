@@ -66,6 +66,10 @@ body {
     outline: none;
 }
 
+.envelope.released {
+    overflow: visible;
+}
+
 .envelope-body {
     position: absolute;
     inset: 0;

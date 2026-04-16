@@ -33,6 +33,7 @@ function handlePhotoUpright() {
     }
 
     introStep = 'photo-upright';
+    envelope.classList.add('released');
     photoCard.classList.add('upright');
     introText.textContent = 'Hazır. Hediyenizi görmek için tıklayın.';
     revealButton.classList.add('visible');
