@@ -237,6 +237,20 @@ body {
     color: #4a4a4a;
 }
 
+/* Blur desteklenmeyen cihazlarda net bir fallback ver */
+@supports not ((backdrop-filter: blur(2px)) or (-webkit-backdrop-filter: blur(2px))) {
+    .glass-card {
+        background: rgba(255, 255, 255, 0.82);
+    }
+}
+
+/* iPhone/Safari ve dokunmatik cihazlarda aşırı blur yerine daha net kart */
+body.reduced-effects .glass-card {
+    background: rgba(255, 255, 255, 0.84);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+}
+
 .glass-card h1 {
     font-size: 1.8rem;
     margin-bottom: 15px;
@@ -279,5 +293,11 @@ body {
 
     .intro-text {
         font-size: 0.98rem;
+    }
+
+    .glass-card {
+        background: rgba(255, 255, 255, 0.86);
+        backdrop-filter: blur(5px);
+        -webkit-backdrop-filter: blur(5px);
     }
 }

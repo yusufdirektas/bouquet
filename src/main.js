@@ -14,6 +14,24 @@ const introText = document.getElementById('intro-text');
 const memoryCaption = document.getElementById('memory-caption');
 const revealButton = document.getElementById('reveal-button');
 const giftApp = document.getElementById('gift-app');
+
+const isiOS = /iPad|iPhone|iPod/.test(window.navigator.userAgent) || (window.navigator.platform === 'MacIntel' && window.navigator.maxTouchPoints > 1);
+const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const isTouchDevice = window.matchMedia('(pointer: coarse)').matches;
+const useReducedEffects = isiOS || prefersReducedMotion || isTouchDevice;
+
+if (useReducedEffects) {
+    document.body.classList.add('reduced-effects');
+}
+
+function getPreferredPixelRatio() {
+    const dpr = window.devicePixelRatio || 1;
+    if (useReducedEffects) {
+        return Math.min(dpr, 1.35);
+    }
+
+    return Math.min(dpr, 2);
+}
 let introStep = 'envelope';
 let canRevealGift = false;
 
@@ -99,11 +117,11 @@ camera.position.set(0, 1.5, 5); // Kamerayı biraz daha geri çektim çiçek sı
 // 3. RENDER MOTORU (Renderer)
 // alpha: true ile arkaplanı şeffaf yapıyoruz ki CSS'teki pembe renk görünsün
 const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.setPixelRatio(getPreferredPixelRatio());
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.outputColorSpace = THREE.SRGBColorSpace;
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure = 1.2;
+renderer.toneMappingExposure = useReducedEffects ? 1.08 : 1.2;
 renderer.domElement.style.opacity = '0';
 renderer.domElement.style.transition = 'opacity 0.7s ease';
 
@@ -204,6 +222,6 @@ animate();
 window.addEventListener('resize', () => {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setPixelRatio(getPreferredPixelRatio());
     renderer.setSize(window.innerWidth, window.innerHeight);
 });
