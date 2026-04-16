@@ -55,6 +55,18 @@ envelope.addEventListener('click', () => {
         handlePhotoUpright();
     }
 });
+envelope.addEventListener('keydown', (event) => {
+    if (event.key !== 'Enter' && event.key !== ' ') {
+        return;
+    }
+
+    event.preventDefault();
+    if (introStep === 'envelope') {
+        handleEnvelopeOpen();
+    } else if (introStep === 'photo-side') {
+        handlePhotoUpright();
+    }
+});
 
 photoCard.addEventListener('click', handlePhotoUpright);
 photoCard.addEventListener('keydown', (event) => {

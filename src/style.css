@@ -63,12 +63,13 @@ body {
     background: transparent;
     transform: translateX(-50%);
     cursor: pointer;
+    outline: none;
 }
 
 .envelope-body {
     position: absolute;
     inset: 0;
-    z-index: 2;
+    z-index: 1;
     border-radius: 12px;
     background: linear-gradient(160deg, #fdf2f7 0%, #f3c8dc 70%);
     border: 1px solid rgba(208, 116, 157, 0.45);
@@ -135,7 +136,7 @@ body {
     opacity: 0;
     pointer-events: none;
     transition: transform 0.9s ease, opacity 0.4s ease;
-    z-index: 1;
+    z-index: 2;
 }
 
 .photo-card img {
@@ -147,12 +148,12 @@ body {
 
 .photo-card.slide-out {
     opacity: 1;
-    transform: translateX(-50%) translateY(18px) rotate(-90deg) scale(0.9);
+    transform: translateX(-50%) translateY(10px) rotate(-90deg) scale(0.9);
 }
 
 .photo-card.upright {
     opacity: 1;
-    transform: translateX(-50%) translateY(-64px) rotate(0deg) scale(2);
+    transform: translateX(-50%) translateY(-72px) rotate(0deg) scale(2);
     pointer-events: auto;
     cursor: pointer;
 }
