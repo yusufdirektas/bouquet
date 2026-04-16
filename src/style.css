@@ -182,8 +182,8 @@ body {
     font-size: 0.82rem;
     letter-spacing: 0.08em;
     font-weight: 700;
-    margin-top: -8px;
-    margin-bottom: 14px;
+    margin-top: 42px;
+    margin-bottom: 10px;
     transition: opacity 0.35s ease;
     pointer-events: none;
 }
