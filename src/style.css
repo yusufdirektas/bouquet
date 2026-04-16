@@ -176,6 +176,22 @@ body {
     margin-bottom: 16px;
 }
 
+.memory-caption {
+    opacity: 0;
+    color: #7a2f56;
+    font-size: 0.82rem;
+    letter-spacing: 0.08em;
+    font-weight: 700;
+    margin-top: -8px;
+    margin-bottom: 14px;
+    transition: opacity 0.35s ease;
+    pointer-events: none;
+}
+
+.memory-caption.visible {
+    opacity: 1;
+}
+
 .reveal-button {
     opacity: 0;
     pointer-events: none;

@@ -11,6 +11,7 @@ const introOverlay = document.getElementById('intro-overlay');
 const envelope = document.getElementById('envelope');
 const photoCard = document.getElementById('photo-card');
 const introText = document.getElementById('intro-text');
+const memoryCaption = document.getElementById('memory-caption');
 const revealButton = document.getElementById('reveal-button');
 const giftApp = document.getElementById('gift-app');
 let introStep = 'envelope';
@@ -36,6 +37,7 @@ function handlePhotoUpright() {
     envelope.classList.add('released');
     photoCard.classList.add('upright');
     introText.textContent = 'Hazır. Hediyenizi görmek için tıklayın.';
+    memoryCaption.classList.add('visible');
     revealButton.classList.add('visible');
     canRevealGift = true;
 }
