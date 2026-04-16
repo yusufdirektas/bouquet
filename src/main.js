@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
 import { fetchGiftMessage } from './api.js';
 
 const titleElement = document.getElementById('gift-title');
@@ -33,7 +34,11 @@ camera.position.set(0, 1.5, 5); // Kamerayı biraz daha geri çektim çiçek sı
 // 3. RENDER MOTORU (Renderer)
 // alpha: true ile arkaplanı şeffaf yapıyoruz ki CSS'teki pembe renk görünsün
 const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.2;
 
 // 3D Canvas'ı HTML'in en arkasına atıyoruz
 renderer.domElement.style.position = 'absolute';
@@ -42,11 +47,18 @@ renderer.domElement.style.left = '0';
 renderer.domElement.style.zIndex = '-1'; 
 document.body.appendChild(renderer.domElement);
 
+const pmremGenerator = new THREE.PMREMGenerator(renderer);
+const environmentTexture = pmremGenerator.fromScene(new RoomEnvironment(), 0.04).texture;
+scene.environment = environmentTexture;
+
 // 4. IŞIKLAR (Lights)
-const ambientLight = new THREE.AmbientLight(0xffffff, 1.5); 
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.8); 
 scene.add(ambientLight);
 
-const directionalLight = new THREE.DirectionalLight(0xffffff, 2);
+const hemiLight = new THREE.HemisphereLight(0xfff3eb, 0xf4e9ff, 0.6);
+scene.add(hemiLight);
+
+const directionalLight = new THREE.DirectionalLight(0xffffff, 1.8);
 directionalLight.position.set(5, 10, 7);
 scene.add(directionalLight);
 
@@ -58,27 +70,40 @@ const loader = new GLTFLoader();
 
 loader.load('/bouquet.glb', (gltf) => {
     bouquetModel = gltf.scene;
-    
-    // --- BOYUT AYARI ---
-    
+
     bouquetModel.scale.set(4, 4, 4); 
-    
-    // --- KONUM AYARI ---
-    // Çiçek çok yukarıdaysa buradaki -2 değerini -1 veya 0 yaparak aşağı/yukarı kaydırabilirsin.
     bouquetModel.position.set(0, -1, 0);
-    
+
+    bouquetModel.traverse((child) => {
+        if (!child.isMesh || !child.material) {
+            return;
+        }
+
+        child.castShadow = false;
+        child.receiveShadow = false;
+
+        const materials = Array.isArray(child.material) ? child.material : [child.material];
+        materials.forEach((material) => {
+            material.envMapIntensity = 1.25;
+            if (material.map) {
+                material.map.colorSpace = THREE.SRGBColorSpace;
+            }
+            material.needsUpdate = true;
+        });
+    });
+
     scene.add(bouquetModel);
 }, undefined, (error) => {
     console.error('Model yüklenirken bir hata oluştu:', error);
 });
-
-// ... (sonraki kodlar)
 
 // 6. KONTROLLER (OrbitControls) - Mouse ile döndürme
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true; 
 controls.dampingFactor = 0.05;
 controls.enablePan = false; 
+controls.minDistance = 3;
+controls.maxDistance = 7;
 
 // 7. ANİMASYON DÖNGÜSÜ
 function animate() {
@@ -98,5 +123,6 @@ animate();
 window.addEventListener('resize', () => {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.setSize(window.innerWidth, window.innerHeight);
 });
