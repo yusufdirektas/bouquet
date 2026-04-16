@@ -14,6 +14,8 @@ const introText = document.getElementById('intro-text');
 const memoryCaption = document.getElementById('memory-caption');
 const revealButton = document.getElementById('reveal-button');
 const giftApp = document.getElementById('gift-app');
+const cardContainer = document.getElementById('card-container');
+const flowerOnlyButton = document.getElementById('flower-only-button');
 
 const isiOS = /iPad|iPhone|iPod/.test(window.navigator.userAgent) || (window.navigator.platform === 'MacIntel' && window.navigator.maxTouchPoints > 1);
 const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -106,6 +108,10 @@ async function hydrateGiftMessage() {
 }
 
 hydrateGiftMessage();
+
+flowerOnlyButton.addEventListener('click', () => {
+    cardContainer.classList.add('hidden');
+});
 
 // 1. SAHNE (Scene)
 const scene = new THREE.Scene();
