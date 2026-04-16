@@ -7,6 +7,63 @@ import { fetchGiftMessage } from './api.js';
 const titleElement = document.getElementById('gift-title');
 const bodyElement = document.getElementById('gift-body');
 const signatureElement = document.getElementById('gift-signature');
+const introOverlay = document.getElementById('intro-overlay');
+const envelope = document.getElementById('envelope');
+const photoCard = document.getElementById('photo-card');
+const introText = document.getElementById('intro-text');
+const revealButton = document.getElementById('reveal-button');
+const giftApp = document.getElementById('gift-app');
+let introStep = 'envelope';
+let canRevealGift = false;
+
+function handleEnvelopeOpen() {
+    if (introStep !== 'envelope') {
+        return;
+    }
+
+    introStep = 'photo-side';
+    envelope.classList.add('open');
+    photoCard.classList.add('slide-out');
+    introText.textContent = 'Fotoğrafı açmak için tekrar tıklayın.';
+}
+
+function handlePhotoUpright() {
+    if (introStep !== 'photo-side') {
+        return;
+    }
+
+    introStep = 'photo-upright';
+    photoCard.classList.add('upright');
+    introText.textContent = 'Hazır. Hediyenizi görmek için tıklayın.';
+    revealButton.classList.add('visible');
+    canRevealGift = true;
+}
+
+function revealGiftScene() {
+    if (!canRevealGift) {
+        return;
+    }
+
+    introOverlay.classList.add('hidden');
+    giftApp.classList.add('visible');
+}
+
+envelope.addEventListener('click', () => {
+    if (introStep === 'envelope') {
+        handleEnvelopeOpen();
+    } else if (introStep === 'photo-side') {
+        handlePhotoUpright();
+    }
+});
+
+photoCard.addEventListener('click', handlePhotoUpright);
+photoCard.addEventListener('keydown', (event) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        handlePhotoUpright();
+    }
+});
+revealButton.addEventListener('click', revealGiftScene);
 
 async function hydrateGiftMessage() {
     try {
@@ -39,6 +96,8 @@ renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.outputColorSpace = THREE.SRGBColorSpace;
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
 renderer.toneMappingExposure = 1.2;
+renderer.domElement.style.opacity = '0';
+renderer.domElement.style.transition = 'opacity 0.7s ease';
 
 // 3D Canvas'ı HTML'in en arkasına atıyoruz
 renderer.domElement.style.position = 'absolute';
@@ -46,6 +105,10 @@ renderer.domElement.style.top = '0';
 renderer.domElement.style.left = '0';
 renderer.domElement.style.zIndex = '-1'; 
 document.body.appendChild(renderer.domElement);
+
+revealButton.addEventListener('click', () => {
+    renderer.domElement.style.opacity = '1';
+});
 
 const pmremGenerator = new THREE.PMREMGenerator(renderer);
 const environmentTexture = pmremGenerator.fromScene(new RoomEnvironment(), 0.04).texture;
@@ -71,8 +134,8 @@ const loader = new GLTFLoader();
 loader.load('/bouquet.glb', (gltf) => {
     bouquetModel = gltf.scene;
 
-    bouquetModel.scale.set(4, 4, 4); 
-    bouquetModel.position.set(0, -1, 0);
+    bouquetModel.scale.set(5, 5, 5); 
+    bouquetModel.position.set(0, -2, 0);
 
     bouquetModel.traverse((child) => {
         if (!child.isMesh || !child.material) {

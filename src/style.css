@@ -11,6 +11,191 @@ body {
     background-color: #fce4ec; /* Arka planda uçuk, pastel bir pembe/krem tonu */
 }
 
+#gift-app {
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.7s ease;
+}
+
+#gift-app.visible {
+    opacity: 1;
+    visibility: visible;
+}
+
+.intro-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 30;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: radial-gradient(circle at top, #ffe9f2 0%, #f7dce9 55%, #f4d4e3 100%);
+    transition: opacity 0.6s ease, visibility 0.6s ease;
+}
+
+.intro-overlay.hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+.intro-content {
+    width: min(92vw, 620px);
+    text-align: center;
+}
+
+.envelope-stage {
+    position: relative;
+    width: 320px;
+    height: 250px;
+    margin: 0 auto 22px;
+    perspective: 1000px;
+}
+
+.envelope {
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    width: 260px;
+    height: 170px;
+    border: none;
+    background: transparent;
+    transform: translateX(-50%);
+    cursor: pointer;
+}
+
+.envelope-body {
+    position: absolute;
+    inset: 0;
+    border-radius: 12px;
+    background: linear-gradient(160deg, #fdf2f7 0%, #f3c8dc 70%);
+    border: 1px solid rgba(208, 116, 157, 0.45);
+    box-shadow: 0 12px 26px rgba(145, 63, 100, 0.22);
+}
+
+.envelope-body::before,
+.envelope-body::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 12px;
+}
+
+.envelope-body::before {
+    clip-path: polygon(0 0, 50% 58%, 100% 0);
+    background: rgba(255, 255, 255, 0.38);
+}
+
+.envelope-body::after {
+    clip-path: polygon(0 100%, 50% 45%, 100% 100%);
+    background: rgba(223, 132, 170, 0.25);
+}
+
+.envelope-flap {
+    position: absolute;
+    left: 0;
+    top: -1px;
+    width: 100%;
+    height: 100px;
+    transform-origin: top center;
+    transition: transform 0.9s ease;
+    clip-path: polygon(0 0, 50% 100%, 100% 0);
+    background: linear-gradient(180deg, #f9d9e8 0%, #f0b6d0 100%);
+    border: 1px solid rgba(208, 116, 157, 0.45);
+    border-bottom: none;
+    border-radius: 12px 12px 0 0;
+}
+
+.envelope-letter {
+    position: absolute;
+    left: 50%;
+    top: 20px;
+    width: 175px;
+    height: 118px;
+    border-radius: 8px;
+    background: linear-gradient(180deg, #fffdfd 0%, #ffeef7 100%);
+    border: 1px solid rgba(227, 170, 195, 0.8);
+    transform: translateX(-50%) translateY(44px);
+    transition: transform 1s ease;
+}
+
+.envelope.open .envelope-flap {
+    transform: rotateX(180deg);
+}
+
+.envelope.open .envelope-letter {
+    transform: translateX(-50%) translateY(-54px);
+}
+
+.photo-card {
+    position: absolute;
+    left: 50%;
+    top: 40px;
+    width: 180px;
+    padding: 10px 10px 12px;
+    border-radius: 10px;
+    background: #fff;
+    box-shadow: 0 12px 30px rgba(78, 48, 62, 0.35);
+    transform: translateX(-50%) translateY(84px) rotate(-90deg) scale(0.32);
+    transform-origin: center center;
+    opacity: 0;
+    pointer-events: none;
+    transition: transform 0.8s ease, opacity 0.4s ease;
+}
+
+.photo-card img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 6px;
+}
+
+.photo-name {
+    margin-top: 8px;
+    color: #5f2a44;
+    font-weight: 600;
+    font-size: 0.88rem;
+}
+
+.photo-card.slide-out {
+    opacity: 1;
+    transform: translateX(-50%) translateY(20px) rotate(-90deg) scale(0.9);
+}
+
+.photo-card.upright {
+    opacity: 1;
+    transform: translateX(-50%) translateY(-10px) rotate(0deg) scale(1.05);
+    pointer-events: auto;
+    cursor: pointer;
+}
+
+.intro-text {
+    color: #7a2f56;
+    font-size: 1.08rem;
+    font-weight: 600;
+    margin-bottom: 16px;
+}
+
+.reveal-button {
+    opacity: 0;
+    pointer-events: none;
+    border: none;
+    border-radius: 999px;
+    background: linear-gradient(120deg, #d34d86, #ea78a8);
+    color: #fff;
+    font-weight: 700;
+    padding: 12px 24px;
+    cursor: pointer;
+    transform: translateY(10px);
+    transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.reveal-button.visible {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+}
+
 /* Mesaj kutusunun ekrandaki konumu */
 .card-container {
     position: absolute;
@@ -54,4 +239,24 @@ body {
     text-align: right;
     font-size: 1.2rem;
     color: #d81b60;
+}
+
+@media (max-width: 640px) {
+    .envelope-stage {
+        width: 270px;
+        height: 220px;
+    }
+
+    .envelope {
+        width: 220px;
+        height: 145px;
+    }
+
+    .photo-card {
+        width: 152px;
+    }
+
+    .intro-text {
+        font-size: 0.98rem;
+    }
 }

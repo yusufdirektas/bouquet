@@ -7,12 +7,31 @@
     <link rel="stylesheet" href="/src/style.css">
   </head>
   <body>
-    
-    <div class="card-container">
-      <div class="glass-card">
-        <h1 id="gift-title">Yükleniyor...</h1>
-        <p id="gift-body">Mesaj getiriliyor.</p>
-        <div class="signature" id="gift-signature"></div>
+    <div class="intro-overlay" id="intro-overlay">
+      <div class="intro-content">
+        <div class="envelope-stage" id="envelope-stage">
+          <button class="envelope" id="envelope" type="button" aria-label="Zarfı aç">
+            <span class="envelope-body"></span>
+            <span class="envelope-flap"></span>
+            <span class="envelope-letter"></span>
+          </button>
+          <div class="photo-card" id="photo-card" role="button" tabindex="0" aria-label="Fotoğrafı büyüt">
+            <img src="/ayse-latife-duman.png" alt="Ayşe Latife Duman" />
+            <div class="photo-name">Ayşe Latife Duman</div>
+          </div>
+        </div>
+        <p class="intro-text" id="intro-text">YSD tarafından gönderilen hediyeniz. Zarfa tıklayınız lütfen.</p>
+        <button class="reveal-button" id="reveal-button" type="button">Hediyenizi görmek için tıklayın</button>
+      </div>
+    </div>
+
+    <div id="gift-app">
+      <div class="card-container">
+        <div class="glass-card">
+          <h1 id="gift-title">Yükleniyor...</h1>
+          <p id="gift-body">Mesaj getiriliyor.</p>
+          <div class="signature" id="gift-signature"></div>
+        </div>
       </div>
     </div>
 
