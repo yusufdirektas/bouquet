@@ -79,17 +79,10 @@ photoCard.addEventListener('keydown', (event) => {
 revealButton.addEventListener('click', revealGiftScene);
 
 async function hydrateGiftMessage() {
-    try {
-        const payload = await fetchGiftMessage();
-        titleElement.textContent = payload.title;
-        bodyElement.textContent = payload.body;
-        signatureElement.textContent = payload.signature;
-    } catch (error) {
-        console.error('Mesaj alınırken bir hata oluştu:', error);
-        titleElement.textContent = 'İyi ki varsınız';
-        bodyElement.textContent = 'Mesaj yüklenemedi. Lütfen daha sonra tekrar deneyin.';
-        signatureElement.textContent = '';
-    }
+    const payload = await fetchGiftMessage();
+    titleElement.textContent = payload.title;
+    bodyElement.textContent = payload.body;
+    signatureElement.textContent = payload.signature;
 }
 
 hydrateGiftMessage();
