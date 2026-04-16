@@ -1,6 +1,27 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+import { fetchGiftMessage } from './api.js';
+
+const titleElement = document.getElementById('gift-title');
+const bodyElement = document.getElementById('gift-body');
+const signatureElement = document.getElementById('gift-signature');
+
+async function hydrateGiftMessage() {
+    try {
+        const payload = await fetchGiftMessage();
+        titleElement.textContent = payload.title;
+        bodyElement.textContent = payload.body;
+        signatureElement.textContent = payload.signature;
+    } catch (error) {
+        console.error('Mesaj alınırken bir hata oluştu:', error);
+        titleElement.textContent = 'İyi ki varsınız';
+        bodyElement.textContent = 'Mesaj yüklenemedi. Lütfen daha sonra tekrar deneyin.';
+        signatureElement.textContent = '';
+    }
+}
+
+hydrateGiftMessage();
 
 // 1. SAHNE (Scene)
 const scene = new THREE.Scene();
