@@ -88,6 +88,16 @@ loader.load('/bouquet.glb', (gltf) => {
             if (material.map) {
                 material.map.colorSpace = THREE.SRGBColorSpace;
             }
+
+            // Yapraklarda görülen kaybolma-belirme etkisini azaltmak için
+            // alfa-blend yerine alfa-cutout kullanıyoruz.
+            if (material.transparent || material.opacity < 1) {
+                material.transparent = false;
+                material.opacity = 1;
+                material.alphaTest = Math.max(material.alphaTest ?? 0, 0.45);
+                material.depthWrite = true;
+            }
+
             material.needsUpdate = true;
         });
     });
