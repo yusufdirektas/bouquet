@@ -1,4 +1,4 @@
-# Sanal Buket
+# Sanal Buket projesi
 
 Özel bir gün için hazırlanmış, etkileşimli bir **3D dijital buket** deneyimi.  
 Proje; açılışta zarf/fotoğraf akışı, ardından Three.js ile render edilen buket ve kişisel mesaj kartı içerir.
