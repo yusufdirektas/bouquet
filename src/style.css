@@ -1,0 +1,323 @@
+/* Page reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    overflow: hidden; /* Hide the page scroll bars */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #fce4ec; /* Soft pastel pink/cream background tone */
+}
+
+#gift-app {
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.7s ease;
+}
+
+#gift-app.visible {
+    opacity: 1;
+    visibility: visible;
+}
+
+.intro-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 30;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: radial-gradient(circle at top, #ffe9f2 0%, #f7dce9 55%, #f4d4e3 100%);
+    transition: opacity 0.6s ease, visibility 0.6s ease;
+}
+
+.intro-overlay.hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+.intro-content {
+    width: min(92vw, 620px);
+    text-align: center;
+}
+
+.envelope-stage {
+    position: relative;
+    width: 320px;
+    height: 250px;
+    margin: 0 auto 22px;
+    perspective: 1000px;
+}
+
+.envelope {
+    overflow: hidden;
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    width: 260px;
+    height: 170px;
+    border: none;
+    background: transparent;
+    transform: translateX(-50%);
+    cursor: pointer;
+    outline: none;
+}
+
+.envelope.released {
+    overflow: visible;
+}
+
+.envelope.released .envelope-body,
+.envelope.released .envelope-flap {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.envelope-body {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    border-radius: 12px;
+    background: linear-gradient(160deg, #fdf2f7 0%, #f3c8dc 70%);
+    border: 1px solid rgba(208, 116, 157, 0.45);
+    box-shadow: 0 12px 26px rgba(145, 63, 100, 0.22);
+    transition: opacity 0.25s ease;
+}
+
+.envelope-body::before,
+.envelope-body::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 12px;
+}
+
+.envelope-body::before {
+    clip-path: polygon(0 0, 50% 58%, 100% 0);
+    background: rgba(255, 255, 255, 0.38);
+}
+
+.envelope-body::after {
+    clip-path: polygon(0 100%, 50% 45%, 100% 100%);
+    background: rgba(223, 132, 170, 0.25);
+}
+
+.envelope-flap {
+    position: absolute;
+    left: 0;
+    top: -1px;
+    z-index: 3;
+    width: 100%;
+    height: 100px;
+    transform-origin: top center;
+    transition: transform 0.9s ease, opacity 0.25s ease;
+    clip-path: polygon(0 0, 50% 100%, 100% 0);
+    background: linear-gradient(180deg, #f9d9e8 0%, #f0b6d0 100%);
+    border: 1px solid rgba(208, 116, 157, 0.45);
+    border-bottom: none;
+    border-radius: 12px 12px 0 0;
+}
+
+.envelope-letter {
+    display: none;
+}
+
+.envelope.open .envelope-flap {
+    transform: rotateX(180deg);
+}
+
+.envelope.open .envelope-letter {
+    transform: translateX(-50%) translateY(-54px);
+}
+
+.photo-card {
+    position: absolute;
+    left: 50%;
+    top: 28px;
+    width: 180px;
+    padding: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: 0 12px 30px rgba(78, 48, 62, 0.35);
+    transform: translateX(-50%) translateY(120px) rotate(-90deg) scale(0.32);
+    transform-origin: center center;
+    opacity: 0;
+    pointer-events: none;
+    transition: transform 0.9s ease, opacity 0.4s ease;
+    z-index: 4;
+}
+
+.photo-card img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 0;
+}
+
+.photo-card.slide-out {
+    opacity: 1;
+    transform: translateX(-50%) translateY(10px) rotate(-90deg) scale(0.9);
+}
+
+.photo-card.upright {
+    opacity: 1;
+    transform: translateX(-50%) translateY(-72px) rotate(0deg) scale(2);
+    pointer-events: auto;
+    cursor: pointer;
+}
+
+.intro-text {
+    color: #7a2f56;
+    font-size: 1.08rem;
+    font-weight: 600;
+    margin-bottom: 16px;
+}
+
+.memory-caption {
+    opacity: 0;
+    color: #7a2f56;
+    font-size: 0.82rem;
+    letter-spacing: 0.08em;
+    font-weight: 700;
+    margin-top: 90px;
+    margin-bottom: 10px;
+    transition: opacity 0.35s ease;
+    pointer-events: none;
+}
+
+.memory-caption.visible {
+    opacity: 1;
+}
+
+.reveal-button {
+    opacity: 0;
+    pointer-events: none;
+    border: none;
+    border-radius: 999px;
+    background: linear-gradient(120deg, #d34d86, #ea78a8);
+    color: #fff;
+    font-weight: 700;
+    padding: 12px 24px;
+    cursor: pointer;
+    transform: translateY(10px);
+    transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.reveal-button.visible {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+}
+
+/* Position of the message box on screen */
+.card-container {
+    position: absolute;
+    bottom: 8%; /* Stays near the bottom of the screen */
+    left: 50%;
+    transform: translateX(-50%); /* Centers the box horizontally */
+    width: 90%;
+    max-width: 600px;
+    pointer-events: none; /* Don't block rotating the 3D bouquet with the mouse */
+    z-index: 10;
+    transition: opacity 0.35s ease, visibility 0.35s ease;
+}
+
+.card-container.hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+/* The glass effect (Glassmorphism) */
+.glass-card {
+    background: rgba(255, 255, 255, 0.25); /* Translucent white */
+    backdrop-filter: blur(12px); /* Blurs the 3D bouquet behind the card */
+    -webkit-backdrop-filter: blur(12px); /* For Safari browsers */
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    border-radius: 20px;
+    padding: 30px;
+    text-align: center;
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15); /* Subtle shadow */
+    color: #4a4a4a;
+}
+
+/* Provide a crisp fallback on devices without blur support */
+@supports not ((backdrop-filter: blur(2px)) or (-webkit-backdrop-filter: blur(2px))) {
+    .glass-card {
+        background: rgba(255, 255, 255, 0.82);
+    }
+}
+
+/* On iPhone/Safari and touch devices, use a crisper card instead of heavy blur */
+body.reduced-effects .glass-card {
+    background: rgba(255, 255, 255, 0.84);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+}
+
+.glass-card h1 {
+    font-size: 1.8rem;
+    margin-bottom: 15px;
+    color: #d81b60; /* A sweet heading color matching the flower tones */
+}
+
+.glass-card p {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    margin-bottom: 20px;
+}
+
+.glass-card .signature {
+    font-style: italic;
+    font-weight: bold;
+    text-align: right;
+    font-size: 1.2rem;
+    color: #d81b60;
+}
+
+.flower-only-button {
+    margin-top: 10px;
+    border: none;
+    border-radius: 999px;
+    background: linear-gradient(120deg, #d34d86, #ea78a8);
+    color: #fff;
+    font-weight: 700;
+    font-size: 0.92rem;
+    padding: 10px 18px;
+    cursor: pointer;
+    pointer-events: auto;
+}
+
+@media (max-width: 640px) {
+    .envelope-stage {
+        width: 270px;
+        height: 220px;
+    }
+
+    .envelope {
+        width: 220px;
+        height: 145px;
+    }
+
+    .photo-card {
+        width: 152px;
+        top: 24px;
+    }
+
+    .photo-card.upright {
+        transform: translateX(-50%) translateY(-50px) rotate(0deg) scale(1.6);
+    }
+
+    .intro-text {
+        font-size: 0.98rem;
+    }
+
+    .glass-card {
+        background: rgba(255, 255, 255, 0.86);
+        backdrop-filter: blur(5px);
+        -webkit-backdrop-filter: blur(5px);
+    }
+}

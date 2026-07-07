@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>A Virtual Bouquet</title>
+    <link rel="stylesheet" href="/src/style.css">
+  </head>
+  <body>
+    <div class="intro-overlay" id="intro-overlay">
+      <div class="intro-content">
+        <div class="envelope-stage" id="envelope-stage">
+          <div class="envelope" id="envelope" role="button" tabindex="0" aria-label="Open the envelope">
+            <span class="envelope-body"></span>
+            <span class="envelope-flap"></span>
+            <span class="envelope-letter"></span>
+            <span class="photo-card" id="photo-card" role="button" tabindex="0" aria-label="Enlarge the photo">
+              <img src="/picture.jpg" alt="A cherished memory" />
+            </span>
+          </div>
+        </div>
+        <p class="intro-text" id="intro-text">A gift has arrived for you. Please click the envelope.</p>
+        <p class="memory-caption" id="memory-caption">A MEMORY FROM YEARS AGO</p>
+        <button class="reveal-button" id="reveal-button" type="button">Click to see your gift</button>
+      </div>
+    </div>
+
+    <div id="gift-app">
+      <div class="card-container" id="card-container">
+        <div class="glass-card">
+          <h1 id="gift-title">Loading...</h1>
+          <p id="gift-body">Fetching the message.</p>
+          <div class="signature" id="gift-signature"></div>
+          <button class="flower-only-button" id="flower-only-button" type="button">Click to see the flowers</button>
+        </div>
+      </div>
+    </div>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
