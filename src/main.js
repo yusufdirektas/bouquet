@@ -17,6 +17,29 @@ const giftApp = document.getElementById('gift-app');
 const cardContainer = document.getElementById('card-container');
 const flowerOnlyButton = document.getElementById('flower-only-button');
 
+// Theme toggle (dark / light) — initial theme is set by an inline script in index.html
+const THEME_KEY = 'vb-theme';
+const themeToggle = document.getElementById('theme-toggle');
+const themeIcon = document.getElementById('theme-icon');
+
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+    themeIcon.textContent = theme === 'dark' ? '☀' : '☾';
+    themeToggle.setAttribute('aria-label', theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme');
+}
+
+applyTheme(document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark');
+
+themeToggle.addEventListener('click', () => {
+    const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    try {
+        localStorage.setItem(THEME_KEY, next);
+    } catch (e) {
+        /* storage unavailable — theme still applies for this session */
+    }
+    applyTheme(next);
+});
+
 const isiOS = /iPad|iPhone|iPod/.test(window.navigator.userAgent) || (window.navigator.platform === 'MacIntel' && window.navigator.maxTouchPoints > 1);
 const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 const isTouchDevice = window.matchMedia('(pointer: coarse)').matches;
