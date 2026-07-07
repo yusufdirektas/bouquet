@@ -123,17 +123,168 @@ photoCard.addEventListener('keydown', (event) => {
 });
 revealButton.addEventListener('click', revealGiftScene);
 
+// --- Customization (photo + gift message), persisted in localStorage ---
+const CUSTOM_KEY = 'vb-custom';
+const DEFAULT_PHOTO = '/picture.jpg';
+const photoImage = photoCard.querySelector('img');
+
+function loadCustom() {
+    try {
+        return JSON.parse(localStorage.getItem(CUSTOM_KEY)) || {};
+    } catch (e) {
+        return {};
+    }
+}
+
+let custom = loadCustom();
+
+function applyCustomPhoto() {
+    photoImage.src = custom.photo || DEFAULT_PHOTO;
+}
+
+applyCustomPhoto();
+
 async function hydrateGiftMessage() {
     const payload = await fetchGiftMessage();
-    titleElement.textContent = payload.title;
-    bodyElement.textContent = payload.body;
-    signatureElement.textContent = payload.signature;
+    titleElement.textContent = custom.title || payload.title;
+    bodyElement.textContent = custom.body || payload.body;
+    signatureElement.textContent = custom.signature || payload.signature;
 }
 
 hydrateGiftMessage();
 
 flowerOnlyButton.addEventListener('click', () => {
     cardContainer.classList.add('hidden');
+});
+
+// --- Customize panel ---
+const customizeButton = document.getElementById('customize-button');
+const customizePanel = document.getElementById('customize-panel');
+const customizeClose = document.getElementById('customize-close');
+const customizeSave = document.getElementById('customize-save');
+const customizeReset = document.getElementById('customize-reset');
+const customizePhotoInput = document.getElementById('customize-photo');
+const customizePreview = document.getElementById('customize-preview');
+const customizeTitle = document.getElementById('customize-title');
+const customizeBody = document.getElementById('customize-body');
+const customizeSignature = document.getElementById('customize-signature');
+
+// Holds a freshly chosen (not yet saved) photo data URL
+let pendingPhoto = null;
+
+function setPreview(src) {
+    if (src) {
+        customizePreview.src = src;
+        customizePreview.classList.add('has-photo');
+    } else {
+        customizePreview.removeAttribute('src');
+        customizePreview.classList.remove('has-photo');
+    }
+}
+
+function openCustomizePanel() {
+    pendingPhoto = null;
+    customizeTitle.value = custom.title || '';
+    customizeBody.value = custom.body || '';
+    customizeSignature.value = custom.signature || '';
+    setPreview(custom.photo || DEFAULT_PHOTO);
+    customizePanel.classList.add('open');
+    customizePanel.setAttribute('aria-hidden', 'false');
+}
+
+function closeCustomizePanel() {
+    customizePanel.classList.remove('open');
+    customizePanel.setAttribute('aria-hidden', 'true');
+}
+
+// Downscale an uploaded image so it stays inside the localStorage quota
+function readImageFile(file, maxDim = 1200) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+            const img = new Image();
+            img.onload = () => {
+                const scale = Math.min(1, maxDim / Math.max(img.width, img.height));
+                const width = Math.round(img.width * scale);
+                const height = Math.round(img.height * scale);
+                const canvas = document.createElement('canvas');
+                canvas.width = width;
+                canvas.height = height;
+                canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+                resolve(canvas.toDataURL('image/jpeg', 0.85));
+            };
+            img.onerror = reject;
+            img.src = reader.result;
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+    });
+}
+
+customizeButton.addEventListener('click', openCustomizePanel);
+customizeClose.addEventListener('click', closeCustomizePanel);
+customizePanel.addEventListener('click', (event) => {
+    if (event.target === customizePanel) {
+        closeCustomizePanel();
+    }
+});
+
+customizePhotoInput.addEventListener('change', async (event) => {
+    const file = event.target.files && event.target.files[0];
+    if (!file) {
+        return;
+    }
+
+    try {
+        pendingPhoto = await readImageFile(file);
+        setPreview(pendingPhoto);
+    } catch (e) {
+        console.error('Could not read the selected image:', e);
+    }
+});
+
+customizeSave.addEventListener('click', () => {
+    const next = {};
+    if (pendingPhoto) {
+        next.photo = pendingPhoto;
+    } else if (custom.photo) {
+        next.photo = custom.photo;
+    }
+
+    const title = customizeTitle.value.trim();
+    const body = customizeBody.value.trim();
+    const signature = customizeSignature.value.trim();
+    if (title) next.title = title;
+    if (body) next.body = body;
+    if (signature) next.signature = signature;
+
+    try {
+        localStorage.setItem(CUSTOM_KEY, JSON.stringify(next));
+    } catch (e) {
+        window.alert('Could not save — the photo may be too large. Try a smaller image.');
+        return;
+    }
+
+    custom = next;
+    applyCustomPhoto();
+    hydrateGiftMessage();
+    closeCustomizePanel();
+});
+
+customizeReset.addEventListener('click', () => {
+    try {
+        localStorage.removeItem(CUSTOM_KEY);
+    } catch (e) {
+        /* ignore */
+    }
+    custom = {};
+    pendingPhoto = null;
+    applyCustomPhoto();
+    hydrateGiftMessage();
+    customizeTitle.value = '';
+    customizeBody.value = '';
+    customizeSignature.value = '';
+    setPreview(DEFAULT_PHOTO);
 });
 
 // 1. SCENE

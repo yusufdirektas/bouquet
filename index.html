@@ -23,9 +23,50 @@
     </script>
   </head>
   <body>
-    <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Switch theme">
+    <button class="tool-button" id="customize-button" type="button" aria-label="Customize gift">
+      <span aria-hidden="true">✎</span>
+    </button>
+    <button class="tool-button theme-toggle" id="theme-toggle" type="button" aria-label="Switch theme">
       <span class="theme-icon" id="theme-icon">☾</span>
     </button>
+
+    <div class="customize-panel" id="customize-panel" aria-hidden="true">
+      <div class="customize-sheet" role="dialog" aria-modal="true" aria-label="Customize your gift">
+        <div class="customize-head">
+          <h2>Customize your gift</h2>
+          <button class="customize-close" id="customize-close" type="button" aria-label="Close">✕</button>
+        </div>
+
+        <div class="field">
+          <span class="field-label">Photo</span>
+          <label class="photo-upload" for="customize-photo">
+            <img id="customize-preview" alt="Selected photo preview" />
+            <span class="photo-upload-hint">Click to choose a photo</span>
+            <input type="file" id="customize-photo" accept="image/*" />
+          </label>
+        </div>
+
+        <label class="field" for="customize-title">
+          <span class="field-label">Title</span>
+          <input type="text" id="customize-title" maxlength="80" placeholder="Happy Birthday," />
+        </label>
+
+        <label class="field" for="customize-body">
+          <span class="field-label">Message</span>
+          <textarea id="customize-body" rows="5" maxlength="800" placeholder="Write your message here..."></textarea>
+        </label>
+
+        <label class="field" for="customize-signature">
+          <span class="field-label">Signature</span>
+          <input type="text" id="customize-signature" maxlength="60" placeholder="- With love" />
+        </label>
+
+        <div class="customize-actions">
+          <button class="ghost-button" id="customize-reset" type="button">Reset</button>
+          <button class="primary-button" id="customize-save" type="button">Save</button>
+        </div>
+      </div>
+    </div>
     <div class="intro-overlay" id="intro-overlay">
       <div class="intro-content">
         <div class="envelope-stage" id="envelope-stage">

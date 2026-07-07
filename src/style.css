@@ -97,10 +97,9 @@ body {
    Theme toggle
    ============================================================ */
 
-.theme-toggle {
+.tool-button {
     position: fixed;
     top: 18px;
-    right: 18px;
     z-index: 40;
     width: 46px;
     height: 46px;
@@ -119,12 +118,220 @@ body {
     transition: transform 0.3s var(--ease), background 0.4s var(--ease), color 0.4s var(--ease), border-color 0.4s var(--ease);
 }
 
+.tool-button:active {
+    transform: scale(0.96);
+}
+
+#customize-button {
+    left: 18px;
+}
+
+#customize-button:hover {
+    transform: scale(1.06);
+}
+
+.theme-toggle {
+    right: 18px;
+}
+
 .theme-toggle:hover {
     transform: rotate(-18deg) scale(1.06);
 }
 
-.theme-toggle:active {
-    transform: scale(0.96);
+/* ============================================================
+   Customize panel
+   ============================================================ */
+
+.customize-panel {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: rgba(40, 18, 28, 0.5);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.35s var(--ease), visibility 0.35s var(--ease);
+}
+
+.customize-panel.open {
+    opacity: 1;
+    visibility: visible;
+}
+
+.customize-sheet {
+    width: min(94vw, 440px);
+    max-height: 90vh;
+    overflow-y: auto;
+    background: var(--card-bg-solid);
+    border: 1px solid var(--card-border);
+    border-radius: 22px;
+    padding: 26px;
+    box-shadow: var(--shadow-lg);
+    transform: translateY(16px) scale(0.98);
+    transition: transform 0.35s var(--ease);
+}
+
+.customize-panel.open .customize-sheet {
+    transform: translateY(0) scale(1);
+}
+
+.customize-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.customize-head h2 {
+    font-family: var(--serif);
+    font-size: 1.7rem;
+    font-weight: 600;
+    color: var(--rose-deep);
+}
+
+.customize-close {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    border: none;
+    background: var(--rose-veil);
+    color: var(--rose-deep);
+    font-size: 0.95rem;
+    cursor: pointer;
+    display: grid;
+    place-items: center;
+    transition: background 0.2s var(--ease);
+}
+
+.customize-close:hover {
+    background: rgba(192, 79, 125, 0.24);
+}
+
+.field {
+    display: block;
+    margin-bottom: 18px;
+}
+
+.field-label {
+    display: block;
+    margin-bottom: 7px;
+    font-size: 0.76rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+}
+
+.field input[type="text"],
+.field textarea {
+    width: 100%;
+    font-family: var(--sans);
+    font-size: 1rem;
+    color: var(--ink);
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 11px 14px;
+    outline: none;
+    transition: border-color 0.2s var(--ease), box-shadow 0.2s var(--ease);
+}
+
+.field textarea {
+    resize: vertical;
+    line-height: 1.5;
+}
+
+.field input[type="text"]:focus,
+.field textarea:focus {
+    border-color: var(--rose);
+    box-shadow: 0 0 0 3px var(--rose-veil);
+}
+
+.photo-upload {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    padding: 16px;
+    border: 1.5px dashed var(--card-border);
+    border-radius: 14px;
+    cursor: pointer;
+    transition: border-color 0.2s var(--ease);
+}
+
+.photo-upload:hover {
+    border-color: var(--rose);
+}
+
+.photo-upload img {
+    display: none;
+    max-width: 160px;
+    max-height: 160px;
+    border-radius: 10px;
+    box-shadow: var(--shadow-sm);
+}
+
+.photo-upload img.has-photo {
+    display: block;
+}
+
+.photo-upload-hint {
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+}
+
+.photo-upload input[type="file"] {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.customize-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 24px;
+}
+
+.primary-button,
+.ghost-button {
+    flex: 1;
+    font-family: var(--sans);
+    font-weight: 700;
+    font-size: 0.98rem;
+    padding: 12px 18px;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: transform 0.2s var(--ease), box-shadow 0.2s var(--ease), background 0.2s var(--ease);
+}
+
+.primary-button {
+    border: none;
+    color: #fff;
+    background: linear-gradient(120deg, var(--rose-deep), var(--rose));
+    box-shadow: var(--shadow-sm);
+}
+
+.primary-button:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.ghost-button {
+    border: 1px solid var(--card-border);
+    background: transparent;
+    color: var(--ink-soft);
+}
+
+.ghost-button:hover {
+    color: var(--rose-deep);
+    border-color: var(--rose);
 }
 
 /* ============================================================
