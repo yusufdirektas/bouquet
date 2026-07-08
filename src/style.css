@@ -334,6 +334,55 @@ body {
     border-color: var(--rose);
 }
 
+.share-button {
+    width: 100%;
+    margin-top: 12px;
+}
+
+.share-button:disabled {
+    opacity: 0.65;
+    cursor: default;
+    transform: none;
+    box-shadow: var(--shadow-sm);
+}
+
+.share-result {
+    margin-top: 16px;
+    padding: 14px;
+    border-radius: 14px;
+    background: var(--rose-veil);
+}
+
+.share-hint {
+    margin-bottom: 10px;
+    font-size: 0.86rem;
+    color: var(--ink-soft);
+    text-align: center;
+}
+
+.share-row {
+    display: flex;
+    gap: 8px;
+}
+
+.share-row input {
+    flex: 1;
+    min-width: 0;
+    font-family: var(--sans);
+    font-size: 0.9rem;
+    color: var(--ink);
+    background: var(--card-bg-solid);
+    border: 1px solid var(--card-border);
+    border-radius: 10px;
+    padding: 9px 12px;
+    outline: none;
+}
+
+.share-row .ghost-button {
+    flex: 0 0 auto;
+    padding: 9px 18px;
+}
+
 /* ============================================================
    Intro overlay
    ============================================================ */

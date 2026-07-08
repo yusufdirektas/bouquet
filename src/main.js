@@ -142,8 +142,6 @@ function applyCustomPhoto() {
     photoImage.src = custom.photo || DEFAULT_PHOTO;
 }
 
-applyCustomPhoto();
-
 async function hydrateGiftMessage() {
     const payload = await fetchGiftMessage();
     titleElement.textContent = custom.title || payload.title;
@@ -151,7 +149,35 @@ async function hydrateGiftMessage() {
     signatureElement.textContent = custom.signature || payload.signature;
 }
 
-hydrateGiftMessage();
+// When opened via a shared link (?g=<id>), load that gift from the backend and
+// let it override any local customization for this viewer.
+async function loadSharedGift() {
+    const id = new URLSearchParams(window.location.search).get('g');
+    if (!id) {
+        return;
+    }
+    try {
+        const response = await fetch(`/api/gift?id=${encodeURIComponent(id)}`);
+        if (!response.ok) {
+            return;
+        }
+        const gift = await response.json();
+        custom = {
+            title: gift.title || undefined,
+            body: gift.body || undefined,
+            signature: gift.signature || undefined,
+            photo: gift.photoUrl || undefined,
+        };
+    } catch (error) {
+        console.warn('Could not load the shared gift:', error);
+    }
+}
+
+(async () => {
+    await loadSharedGift();
+    applyCustomPhoto();
+    hydrateGiftMessage();
+})();
 
 flowerOnlyButton.addEventListener('click', () => {
     cardContainer.classList.add('hidden');
@@ -168,6 +194,10 @@ const customizePreview = document.getElementById('customize-preview');
 const customizeTitle = document.getElementById('customize-title');
 const customizeBody = document.getElementById('customize-body');
 const customizeSignature = document.getElementById('customize-signature');
+const customizeShare = document.getElementById('customize-share');
+const shareResult = document.getElementById('share-result');
+const shareLink = document.getElementById('share-link');
+const shareCopy = document.getElementById('share-copy');
 
 // Holds a freshly chosen (not yet saved) photo data URL
 let pendingPhoto = null;
@@ -285,6 +315,57 @@ customizeReset.addEventListener('click', () => {
     customizeBody.value = '';
     customizeSignature.value = '';
     setPreview(DEFAULT_PHOTO);
+    shareResult.hidden = true;
+});
+
+// Upload the current customization to the backend and get a permanent share link
+customizeShare.addEventListener('click', async () => {
+    customizeShare.disabled = true;
+    customizeShare.textContent = 'Creating link…';
+    shareResult.hidden = true;
+
+    const payload = {
+        title: customizeTitle.value.trim(),
+        body: customizeBody.value.trim(),
+        signature: customizeSignature.value.trim(),
+        photo: pendingPhoto || custom.photo || null,
+    };
+
+    try {
+        const response = await fetch('/api/gift', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
+        });
+        if (!response.ok) {
+            throw new Error(`status ${response.status}`);
+        }
+        const { id } = await response.json();
+        shareLink.value = `${window.location.origin}/?g=${id}`;
+        shareResult.hidden = false;
+        shareLink.focus();
+        shareLink.select();
+    } catch (error) {
+        console.error('Could not create shareable link:', error);
+        window.alert('Could not create the link. The sharing backend may not be set up yet.');
+    } finally {
+        customizeShare.disabled = false;
+        customizeShare.textContent = 'Create shareable link';
+    }
+});
+
+shareCopy.addEventListener('click', async () => {
+    try {
+        await navigator.clipboard.writeText(shareLink.value);
+    } catch (e) {
+        shareLink.focus();
+        shareLink.select();
+        document.execCommand('copy');
+    }
+    shareCopy.textContent = 'Copied';
+    setTimeout(() => {
+        shareCopy.textContent = 'Copy';
+    }, 1500);
 });
 
 // 1. SCENE

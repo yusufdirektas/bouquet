@@ -63,7 +63,17 @@
 
         <div class="customize-actions">
           <button class="ghost-button" id="customize-reset" type="button">Reset</button>
-          <button class="primary-button" id="customize-save" type="button">Save</button>
+          <button class="primary-button" id="customize-save" type="button">Preview</button>
+        </div>
+
+        <button class="primary-button share-button" id="customize-share" type="button">Create shareable link</button>
+
+        <div class="share-result" id="share-result" hidden>
+          <p class="share-hint">Send this link — it opens your personalized gift.</p>
+          <div class="share-row">
+            <input type="text" id="share-link" readonly aria-label="Shareable link" />
+            <button class="ghost-button" id="share-copy" type="button">Copy</button>
+          </div>
         </div>
       </div>
     </div>
