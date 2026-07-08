@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 Disallow: /api/
 
-Sitemap: https://hediyeniz.app/sitemap.xml
+Sitemap: https://yusufsaitdirektas.com.tr/sitemap.xml
