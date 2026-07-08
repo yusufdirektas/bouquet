@@ -33,6 +33,44 @@ function clean(value, max) {
     return trimmed || null;
 }
 
+// Only accept gift creation from a browser on our own site: the request's
+// Origin host must match the host it was served from. Blocks other sites'
+// scripts and casual scripted abuse (curl with no Origin). Not a hard wall
+// against a forged Origin, but stops the easy 99%.
+function isSameOrigin(req) {
+    const origin = req.headers.origin;
+    if (!origin) {
+        return false;
+    }
+    try {
+        return new URL(origin).host === req.headers.host;
+    } catch {
+        return false;
+    }
+}
+
+// Best-effort per-IP rate limit for POST. Serverless is stateless so this
+// only holds within a warm instance, but it still adds friction to bursts.
+const WINDOW_MS = 10 * 60 * 1000;
+const MAX_CREATES = 12;
+const hits = new Map();
+
+function rateLimited(req) {
+    const fwd = req.headers['x-forwarded-for'] || '';
+    const ip = fwd.split(',')[0].trim() || 'unknown';
+    const now = Date.now();
+    const recent = (hits.get(ip) || []).filter((t) => now - t < WINDOW_MS);
+    recent.push(now);
+    hits.set(ip, recent);
+    if (hits.size > 5000) {
+        // Keep the map from growing without bound on a long-lived instance.
+        for (const [key, times] of hits) {
+            if (!times.some((t) => now - t < WINDOW_MS)) hits.delete(key);
+        }
+    }
+    return recent.length > MAX_CREATES;
+}
+
 export default async function handler(req, res) {
     try {
         if (!isConfigured()) {
@@ -56,6 +94,13 @@ export default async function handler(req, res) {
         }
 
         if (req.method === 'POST') {
+            if (!isSameOrigin(req)) {
+                return res.status(403).json({ error: 'Forbidden' });
+            }
+            if (rateLimited(req)) {
+                return res.status(429).json({ error: 'Too many links created. Try again in a few minutes.' });
+            }
+
             const { title, body, signature, photo } = req.body || {};
 
             let photoUrl = null;
