@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 Disallow: /api/
 
-Sitemap: https://project-s4pva.vercel.app/sitemap.xml
+Sitemap: https://hediyeniz.app/sitemap.xml
