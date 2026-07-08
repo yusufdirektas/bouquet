@@ -64,18 +64,17 @@ the personalized gift for anyone who receives it.
 - **Local dev** (`npm run dev:full`): backed by an in-memory mock in the Express
   server. Links work until the server restarts.
 - **Production** (Vercel): backed by the serverless function `api/gift.js`, which
-  stores the photo in **Vercel Blob** and the message metadata in **Vercel KV**.
+  stores both the photo and the message metadata in **Vercel Blob** (the metadata
+  as a `gifts/<id>.json` blob). No separate database is needed.
 
 ### Deploying with sharing enabled
 
 1. Import the project into Vercel (it auto-detects Vite + the `api/` function).
-2. In the project's **Storage** tab, connect a **KV** store and a **Blob** store.
-   Vercel auto-injects these environment variables:
-   - `KV_REST_API_URL`, `KV_REST_API_TOKEN`
-   - `BLOB_READ_WRITE_TOKEN`
+2. In the project's **Storage** tab, connect a **Blob** store. Vercel auto-injects
+   `BLOB_READ_WRITE_TOKEN`.
 3. Redeploy.
 
-Until both stores are connected, `/api/gift` returns `503` and the app tells the
+Until the store is connected, `/api/gift` returns `503` and the app tells the
 user that sharing is not configured — the rest of the experience still works.
 
 ## Project Structure

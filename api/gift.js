@@ -1,23 +1,19 @@
 // Vercel serverless function: create and fetch shareable gifts.
-// Photo is stored in Vercel Blob, the message metadata in Vercel KV.
+// Everything lives in Vercel Blob — the photo as an image blob and the gift
+// metadata as a JSON blob at the deterministic path gifts/<id>.json. No KV /
+// database is required, so a single connected Blob store is enough.
 //
-// Required environment variables (auto-injected when you connect a Blob store
-// and a KV store to the project in the Vercel dashboard):
+// Required environment variable (auto-injected when you connect a Blob store
+// to the project):
 //   BLOB_READ_WRITE_TOKEN
-//   KV_REST_API_URL, KV_REST_API_TOKEN
-import { put } from '@vercel/blob';
-import { kv } from '@vercel/kv';
+import { put, list } from '@vercel/blob';
 
 const ID_ALPHABET = '0123456789abcdefghijklmnopqrstuvwxyz';
 const MAX_PHOTO_BYTES = 3 * 1024 * 1024;
 
-// True only when both a KV store and a Blob store are connected to the project.
+// True only when a Blob store is connected to the project.
 function isConfigured() {
-    return Boolean(
-        process.env.KV_REST_API_URL &&
-            process.env.KV_REST_API_TOKEN &&
-            process.env.BLOB_READ_WRITE_TOKEN,
-    );
+    return Boolean(process.env.BLOB_READ_WRITE_TOKEN);
 }
 
 function makeId(length = 10) {
@@ -41,19 +37,21 @@ export default async function handler(req, res) {
     try {
         if (!isConfigured()) {
             return res.status(503).json({
-                error: 'Sharing is not configured. Connect a Vercel KV and Blob store to enable it.',
+                error: 'Sharing is not configured. Connect a Vercel Blob store to enable it.',
             });
         }
 
         if (req.method === 'GET') {
             const id = req.query.id;
-            if (!id) {
-                return res.status(400).json({ error: 'Missing id' });
+            if (!id || !/^[a-z0-9]+$/.test(id)) {
+                return res.status(400).json({ error: 'Missing or invalid id' });
             }
-            const gift = await kv.get(`gift:${id}`);
-            if (!gift) {
+            // Find the metadata blob for this id and read it back.
+            const { blobs } = await list({ prefix: `gifts/${id}.json`, limit: 1 });
+            if (!blobs.length) {
                 return res.status(404).json({ error: 'Not found' });
             }
+            const gift = await fetch(blobs[0].url).then((r) => r.json());
             return res.status(200).json(gift);
         }
 
@@ -89,7 +87,11 @@ export default async function handler(req, res) {
             };
 
             const id = makeId();
-            await kv.set(`gift:${id}`, gift);
+            await put(`gifts/${id}.json`, JSON.stringify(gift), {
+                access: 'public',
+                addRandomSuffix: false,
+                contentType: 'application/json',
+            });
             return res.status(200).json({ id });
         }
 
