@@ -338,7 +338,8 @@ customizeShare.addEventListener('click', async () => {
             body: JSON.stringify(payload),
         });
         if (!response.ok) {
-            throw new Error(`status ${response.status}`);
+            const info = await response.json().catch(() => ({}));
+            throw new Error(info.error || `status ${response.status}`);
         }
         const { id } = await response.json();
         shareLink.value = `${window.location.origin}/?g=${id}`;
@@ -347,7 +348,7 @@ customizeShare.addEventListener('click', async () => {
         shareLink.select();
     } catch (error) {
         console.error('Could not create shareable link:', error);
-        window.alert('Could not create the link. The sharing backend may not be set up yet.');
+        window.alert(error.message || 'Could not create the link. Please try again.');
     } finally {
         customizeShare.disabled = false;
         customizeShare.textContent = 'Create shareable link';

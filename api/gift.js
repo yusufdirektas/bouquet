@@ -11,6 +11,15 @@ import { kv } from '@vercel/kv';
 const ID_ALPHABET = '0123456789abcdefghijklmnopqrstuvwxyz';
 const MAX_PHOTO_BYTES = 3 * 1024 * 1024;
 
+// True only when both a KV store and a Blob store are connected to the project.
+function isConfigured() {
+    return Boolean(
+        process.env.KV_REST_API_URL &&
+            process.env.KV_REST_API_TOKEN &&
+            process.env.BLOB_READ_WRITE_TOKEN,
+    );
+}
+
 function makeId(length = 10) {
     const bytes = crypto.getRandomValues(new Uint8Array(length));
     let id = '';
@@ -30,6 +39,12 @@ function clean(value, max) {
 
 export default async function handler(req, res) {
     try {
+        if (!isConfigured()) {
+            return res.status(503).json({
+                error: 'Sharing is not configured. Connect a Vercel KV and Blob store to enable it.',
+            });
+        }
+
         if (req.method === 'GET') {
             const id = req.query.id;
             if (!id) {
